@@ -1,0 +1,3 @@
+SERVER_PORT: 8088
+
+LOG_HOME: D:/tmp/Logback Study/logging

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds" debug="true">
+    <!-- Properties -->
+    <springProperty scope="context" name="applicationName" source="spring.application.name"/>
+    <springProperty scope="context" name="logHome" source="logging.file.path" defaultValue="D:/tmp/Logback Study" />
+    <property name="ENCODING" value="UTF8"/>
+    <property name="PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%.15thread] %20logger{0}:%-4line [%5level] - %msg%n" />
+    <property name="PATTERN_ANSI"
+              value="%magenta(%d{yyyy-MM-dd HH:mm:ss.SSS}) [%.15thread] %20logger{0}:%-4line %highlight([%5level]) - %msg%n" />
+    <!-- Appenders -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>${ENCODING}</charset>
+            <pattern>%11() ${PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <appender name="console-stderr" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <charset>${ENCODING}</charset>
+            <pattern>%11([STDERR]) ${PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <appender name="console-local" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>${ENCODING}</charset>
+            <pattern>%11([LOCAL]) ${PATTERN_ANSI}</pattern>
+        </encoder>
+    </appender>
+    <appender name="console-root" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>${ENCODING}</charset>
+            <pattern>%boldCyan(%11([ROOT])) ${PATTERN_ANSI}</pattern>
+        </encoder>
+    </appender>
+    <appender name="console-info-only" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <charset>${ENCODING}</charset>
+            <pattern>%boldYellow([INFO ONLY]) ${PATTERN_ANSI}</pattern>
+        </encoder>
+    </appender>
+    <appender name="rolling-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logHome}/ls.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logHome}/ls.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <charset>${ENCODING}</charset>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.example.LogbackStudy.controller.LogController" level="TRACE" additivity="true">
+        <appender-ref ref="console-local"/>
+        <appender-ref ref="console-stderr"/>
+    </logger>
+    <!-- Logging Assignment -->
+    <springProfile name="dev">
+        <logger name="com.example.LogbackStudy.controller" level="INFO" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="console-info-only"/>
+            <appender-ref ref="rolling-file"/>
+        </logger>
+        <root level="WARN">
+            <appender-ref ref="console-root" />
+        </root>
+    </springProfile>
+    <springProfile name="local">
+        <logger name="com.example.LogbackStudy.controller" level="TRACE" additivity="false">
+            <appender-ref ref="console-local"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="console" />
+        </root>
+    </springProfile>
+</configuration>

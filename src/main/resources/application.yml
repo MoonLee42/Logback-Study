@@ -1,0 +1,12 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  application:
+    name: M2nLogbackStudy
+  profiles:
+    active: dev
+
+logging:
+  file:
+    path: ${LOG_HOME}
